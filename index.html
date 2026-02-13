@@ -33,11 +33,52 @@
   <input type="number" class="form-control mt-2" placeholder="الكمية بالغرام" data-price="0.12">
 </div>
 
+<div class="item-card">
+  <strong>🍯 مقروط</strong> (8 روبل / 100غ)
+  <input type="number" class="form-control mt-2" placeholder="الكمية بالغرام" data-price="0.08">
+</div>
+
 <hr>
 
 <!-- ====== معلومات الزبون ====== -->
 <h5>📋 معلومات الزبون</h5>
-
 <input id="name" class="form-control mb-2" placeholder="الاسم">
 <input id="phone" class="form-control mb-2" placeholder="رقم الهاتف">
-<input id
+
+<!-- ====== الأزرار ====== -->
+<button id="calculateBtn" class="btn btn-primary mt-3">احسب الثمن الإجمالي</button>
+<p id="total" class="mt-2 fw-bold"></p>
+
+<a id="orderButton" href="https://t.me/Moroccan_food_bot?start=" target="_blank">
+  <button class="btn btn-success mt-2">اطلب الآن</button>
+</a>
+
+<!-- ====== الجافاسكريبت ====== -->
+<script>
+document.getElementById("calculateBtn").addEventListener("click", function() {
+  let items = document.querySelectorAll(".item-card input");
+  let total = 0;
+
+  items.forEach(function(input){
+    let qty = parseFloat(input.value) || 0;
+    let price = parseFloat(input.dataset.price) || 0;
+    total += qty * price;
+  });
+
+  document.getElementById("total").innerText = "الثمن الإجمالي: " + total.toFixed(2) + " روبل";
+
+  // تحديث الرابط للزر مع رسالة جاهزة للبوت
+  let name = document.getElementById("name").value || "غير محدد";
+  let phone = document.getElementById("phone").value || "غير محدد";
+  let msg = encodeURIComponent(
+    "طلب الأكل المغربي\n" +
+    "الاسم: " + name + "\n" +
+    "الهاتف: " + phone + "\n" +
+    "الثمن الإجمالي: " + total.toFixed(2) + " روبل"
+  );
+  document.getElementById("orderButton").href = "https://t.me/Moroccan_food_bot?start=" + msg;
+});
+</script>
+
+</body>
+</html>
