@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -9,7 +10,7 @@
 
   <style>
     body { background:#f8f9fa }
-    .item-card { background:#fff;border-radius:10px;padding:15px;margin-bottom:15px }
+    .item-card { background:#fff; border-radius:10px; padding:15px; margin-bottom:15px }
   </style>
 </head>
 
@@ -44,39 +45,68 @@
 <h5>📋 معلومات الزبون</h5>
 <input id="name" class="form-control mb-2" placeholder="الاسم">
 <input id="phone" class="form-control mb-2" placeholder="رقم الهاتف">
+<input id="deliveryDate" type="date" class="form-control mb-2" placeholder="تاريخ التوصيل">
 
 <!-- ====== الأزرار ====== -->
 <button id="calculateBtn" class="btn btn-primary mt-3">احسب الثمن الإجمالي</button>
 <p id="total" class="mt-2 fw-bold"></p>
 
-<a id="orderButton" href="https://t.me/Moroccan_food_bot?start=" target="_blank">
-  <button class="btn btn-success mt-2">اطلب الآن</button>
-</a>
+<button id="orderButton" class="btn btn-success mt-2">اطلب الآن</button>
 
 <!-- ====== الجافاسكريبت ====== -->
 <script>
 document.getElementById("calculateBtn").addEventListener("click", function() {
   let items = document.querySelectorAll(".item-card input");
   let total = 0;
+  let products = [];
 
   items.forEach(function(input){
     let qty = parseFloat(input.value) || 0;
     let price = parseFloat(input.dataset.price) || 0;
-    total += qty * price;
+    if (qty > 0) {
+      let name = input.parentElement.querySelector("strong").innerText;
+      products.push(name + " - " + qty + "غ = " + (qty * price).toFixed(2) + " روبل");
+      total += qty * price;
+    }
   });
 
   document.getElementById("total").innerText = "الثمن الإجمالي: " + total.toFixed(2) + " روبل";
+});
 
-  // تحديث الرابط للزر مع رسالة جاهزة للبوت
+document.getElementById("orderButton").addEventListener("click", function() {
   let name = document.getElementById("name").value || "غير محدد";
   let phone = document.getElementById("phone").value || "غير محدد";
-  let msg = encodeURIComponent(
+  let deliveryDate = document.getElementById("deliveryDate").value || "غير محدد";
+
+  let items = document.querySelectorAll(".item-card input");
+  let total = 0;
+  let products = [];
+
+  items.forEach(function(input){
+    let qty = parseFloat(input.value) || 0;
+    let price = parseFloat(input.dataset.price) || 0;
+    if (qty > 0) {
+      let nameItem = input.parentElement.querySelector("strong").innerText;
+      products.push(nameItem + " - " + qty + "غ = " + (qty * price).toFixed(2) + " روبل");
+      total += qty * price;
+    }
+  });
+
+  // الرسالة النهائية
+  let msgText = 
     "طلب الأكل المغربي\n" +
     "الاسم: " + name + "\n" +
     "الهاتف: " + phone + "\n" +
-    "الثمن الإجمالي: " + total.toFixed(2) + " روبل"
-  );
-  document.getElementById("orderButton").href = "https://t.me/Moroccan_food_bot?start=" + msg;
+    "تاريخ التوصيل: " + deliveryDate + "\n" +
+    "المنتجات:\n" + products.join("\n") + "\n" +
+    "الثمن الإجمالي: " + total.toFixed(2) + " روبل";
+
+  // نافذة تأكيد
+  if(confirm("✅ تحقق من تفاصيل الطلب:\n\n" + msgText + "\n\nهل تريد الإرسال للبوت؟")) {
+    let msg = encodeURIComponent(msgText);
+    // 🔹 ضع هنا اسم البوت ديالك
+    window.open("https://t.me/Moroccan_food_bot?start=" + msg, "_blank");
+  }
 });
 </script>
 
